@@ -6,10 +6,9 @@ let isConnecting = false;
 const maxRetries = 5;
 const retryInterval = 5000;
 
-
 const dbConfig = {
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -18,7 +17,7 @@ const dbConfig = {
   queueLimit: 0,
   connectTimeout: 60000, // Increased timeout for cloud environments
   ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: true
+    rejectUnauthorized: false  // Changed to false to accept self-signed certificates
   } : false
 };
 
