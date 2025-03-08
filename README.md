@@ -145,7 +145,7 @@ To use it:
 4. Use the requests to test the endpoints
 
 The Postman collection can also be accessed via this shared link:
-[School Management API Postman Collection](https://www.postman.com/faded-shadow-108048/workspace/school-management/collection/12345678-e8d3c4f7-5b1a-4f25-8afe-6c9b4c9a2f42)
+[School Management API Postman Collection](https://bhawani-2696.postman.co/workspace/Bhawani~fe33c9b1-a623-4de1-8b66-3c417f18f512/collection/24859436-b5d48be5-fa94-4479-a40a-653d186f445e?action=share&creator=24859436)
 
 ## Deliverables
 
