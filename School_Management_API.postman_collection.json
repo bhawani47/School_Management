@@ -1,0 +1,225 @@
+{
+  "info": {
+    "_postman_id": "e8d3c4f7-5b1a-4f25-8afe-6c9b4c9a2f42",
+    "name": "School Management API",
+    "description": "Collection of API endpoints for the School Management system. These endpoints allow for adding new schools and retrieving schools sorted by proximity to a given location.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Add School",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Example School\",\n    \"address\": \"123 Main Street, City, Country\",\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/addSchool",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "addSchool"
+          ]
+        },
+        "description": "Add a new school to the database with name, address, and geographical coordinates."
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Example School\",\n    \"address\": \"123 Main Street, City, Country\",\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/addSchool",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "addSchool"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ],
+          "body": "{\n    \"success\": true,\n    \"message\": \"School added successfully\",\n    \"school\": {\n        \"id\": 1,\n        \"name\": \"Example School\",\n        \"address\": \"123 Main Street, City, Country\",\n        \"latitude\": 37.7749,\n        \"longitude\": -122.4194\n    }\n}",
+          "_postman_previewlanguage": "json"
+        }
+      ]
+    },
+    {
+      "name": "List Schools",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/listSchools?latitude=37.7749&longitude=-122.4194",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "listSchools"
+          ],
+          "query": [
+            {
+              "key": "latitude",
+              "value": "37.7749",
+              "description": "User's current latitude"
+            },
+            {
+              "key": "longitude",
+              "value": "-122.4194",
+              "description": "User's current longitude"
+            }
+          ]
+        },
+        "description": "Retrieve all schools from the database sorted by proximity to the provided geographical coordinates."
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/listSchools?latitude=37.7749&longitude=-122.4194",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "listSchools"
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "37.7749"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-122.4194"
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ],
+          "body": "{\n    \"success\": true,\n    \"count\": 2,\n    \"schools\": [\n        {\n            \"id\": 1,\n            \"name\": \"Nearby School\",\n            \"address\": \"456 Close Ave, City, Country\",\n            \"latitude\": 37.7748,\n            \"longitude\": -122.4195,\n            \"distance\": 0.12\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Far School\",\n            \"address\": \"789 Distance Blvd, City, Country\",\n            \"latitude\": 37.7850,\n            \"longitude\": -122.4350,\n            \"distance\": 1.56\n        }\n    ]\n}",
+          "_postman_previewlanguage": "json"
+        }
+      ]
+    },
+    {
+      "name": "Home",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            ""
+          ]
+        },
+        "description": "Home endpoint that confirms the API is running."
+      },
+      "response": [
+        {
+          "name": "Successful Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "text/html; charset=utf-8"
+            }
+          ],
+          "body": "Welcome to School Management API",
+          "_postman_previewlanguage": "html"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string",
+      "description": "The base URL for your API - change this to match your deployment URL"
+    }
+  ]
+}
