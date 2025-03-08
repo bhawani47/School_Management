@@ -1,47 +1,65 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-let pool;
+let pool = null;
+let isConnecting = false;
+const maxRetries = 5;
+const retryInterval = 5000;
 
-try {
-  pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-  });
+const dbConfig = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
+  connectTimeout: 60000, // Increased timeout for cloud environments
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: true
+  } : false
+};
 
-  // Test the connection
-  pool.getConnection()
-    .then(connection => {
-      console.log('Database connection established successfully');
-      connection.release();
-    })
-    .catch(err => {
-      console.error('Error connecting to the database:', err.message);
-      throw err;
-    });
+async function createPool(retryCount = 0) {
+  if (isConnecting) return pool;
+  isConnecting = true;
 
-} catch (error) {
-  console.error('Error initializing database pool:', error.message);
-  process.exit(1); // Exit the application on critical database errors
+  try {
+    console.log('Attempting to connect to database...');
+    pool = mysql.createPool(dbConfig);
+
+    const connection = await pool.getConnection();
+    console.log('Database connection established successfully');
+    connection.release();
+    isConnecting = false;
+    return pool;
+
+  } catch (error) {
+    console.error(`Database connection attempt ${retryCount + 1} failed:`, error.message);
+    isConnecting = false;
+
+    if (retryCount < maxRetries) {
+      console.log(`Retrying connection in ${retryInterval/1000} seconds...`);
+      await new Promise(resolve => setTimeout(resolve, retryInterval));
+      return createPool(retryCount + 1);
+    }
+
+    throw new Error('Failed to establish database connection after maximum retries');
+  }
 }
 
-// Add connection error handler
-pool.on('error', err => {
-  console.error('Unexpected database error:', err.message);
-  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-    console.error('Database connection was closed');
+// Initialize the pool with error handling
+const initializePool = async () => {
+  try {
+    await createPool();
+    return pool;
+  } catch (error) {
+    console.error('Database initialization failed:', error.message);
+    process.exit(1);
   }
-  if (err.code === 'ER_CON_COUNT_ERROR') {
-    console.error('Database has too many connections');
-  }
-  if (err.code === 'ECONNREFUSED') {
-    console.error('Database connection was refused');
-  }
-});
+};
+
+// Initialize connection pool
+initializePool();
 
 module.exports = pool;

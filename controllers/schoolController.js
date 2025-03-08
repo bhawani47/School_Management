@@ -1,12 +1,14 @@
 const School = require('../models/School');
 const { validateSchoolInput, validateLocationParams } = require('../utils/validation');
 const { calculateDistance } = require('../utils/distance');
+const pool = require('../config/db');
 
 /**
  * Add a new school
  * @route POST /addSchool
  */
 const addSchool = async (req, res) => {
+  let connection;
   try {
     // Validate input data
     const validation = validateSchoolInput(req.body);
@@ -18,9 +20,12 @@ const addSchool = async (req, res) => {
         errors: validation.errors 
       });
     }
+
+    // Get connection from pool
+    connection = await pool.getConnection();
     
     // Create school using the model
-    const school = await School.create(req.body);
+    const school = await School.create(req.body, connection);
     
     res.status(201).json({
       success: true,
@@ -29,11 +34,25 @@ const addSchool = async (req, res) => {
     });
   } catch (error) {
     console.error('Error adding school:', error);
+    
+    // Handle specific database errors
+    if (error.code === 'ECONNREFUSED') {
+      return res.status(503).json({
+        success: false,
+        message: 'Database service unavailable',
+        error: 'Connection refused'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Failed to add school',
       error: error.message
     });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
